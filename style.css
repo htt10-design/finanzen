@@ -527,3 +527,22 @@ select {
 .text-blue { color: var(--accent-blue); }
 .text-green { color: var(--accent-green); }
 .text-red { color: var(--accent-red); }
+.profile-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-color);
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.profile-container input {
+  border: none;
+  background: transparent;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  outline: none;
+  width: 100px;
+}

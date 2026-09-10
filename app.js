@@ -561,3 +561,79 @@ function formatMonthName(monthKey) {
 function escapeHtml(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
+// Beim Laden des Speicherstands auch den Profilnamen laden
+function loadStorage() {
+  const data = localStorage.getItem('financeControlData');
+  if (data) {
+    try {
+      appState = { ...appState, ...JSON.parse(data) };
+    } catch (e) {
+      console.error("Fehler beim Laden der Daten", e);
+    }
+  }
+  
+  // Profilnamen im Input anzeigen
+  const nameInput = document.getElementById('user-name-input');
+  if (nameInput) {
+    nameInput.value = appState.userName || '';
+  }
+}
+
+// Name aktualisieren
+function updateProfileName(name) {
+  appState.userName = name;
+  saveStorage();
+}
+
+// EXPORT: Daten als .json Datei herunterladen
+function exportDataToFile() {
+  const userName = (appState.userName || 'Finanzen').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  const dateStr = new Date().toISOString().split('T')[0];
+  const fileName = `financecontrol_${userName}_${dateStr}.json`;
+
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", fileName);
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+}
+
+// IMPORT: Daten aus einer .json Datei einlesen
+function importDataFromFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const importedData = JSON.parse(e.target.result);
+      
+      // Validierung, ob die Struktur passt
+      if (importedData && typeof importedData === 'object' && importedData.incomes) {
+        appState = importedData;
+        saveStorage();
+        
+        // UI komplett auffrischen
+        const nameInput = document.getElementById('user-name-input');
+        if (nameInput) nameInput.value = appState.userName || '';
+        
+        updateMonthPickers();
+        updateDashboard();
+        
+        // Aktive View aktualisieren
+        const activeView = document.querySelector('.view.active').id;
+        switchView(activeView);
+
+        alert(`Datenstand von "${appState.userName || 'Unbekannt'}" erfolgreich geladen!`);
+      } else {
+        alert("Die Datei hat kein gültiges FinanceControl-Format.");
+      }
+    } catch (err) {
+      alert("Fehler beim Lesen der Datei: " + err.message);
+    }
+  };
+  
+  reader.readAsText(file);
+}

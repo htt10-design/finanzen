@@ -26,12 +26,29 @@
           <i data-lucide="moon" id="theme-icon-moon"></i>
         </button>
 
+        <!-- Monatswähler -->
         <div class="month-picker-container">
           <i data-lucide="calendar"></i>
           <select id="global-month-select" onchange="changeActiveMonth(this.value)">
             <!-- Wird via JS befüllt -->
           </select>
         </div>
+
+        <!-- Profil / Namen Eingabe -->
+        <div class="profile-container">
+          <i data-lucide="user"></i>
+          <input type="text" id="user-name-input" placeholder="Dein Name" onchange="updateProfileName(this.value)">
+        </div>
+
+        <!-- Export / Import Buttons -->
+        <button class="secondary-btn" onclick="exportDataToFile()" title="Daten als Datei speichern">
+          <i data-lucide="download"></i> Export
+        </button>
+        
+        <label class="secondary-btn" title="Daten aus Datei laden" style="cursor: pointer; margin: 0;">
+          <i data-lucide="upload"></i> Import
+          <input type="file" id="import-file-input" accept=".json" onchange="importDataFromFile(event)" style="display: none;">
+        </label>
       </div>
     </header>
 
