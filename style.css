@@ -546,3 +546,64 @@ select {
   outline: none;
   width: 100px;
 }
+/* SMARTPHONE OPTIMIERUNG (PWA & RESPONSIVE) */
+
+/* Anpassungen für kleinere Bildschirme (Handy) */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
+  .top-nav {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .logo {
+    justify-content: center;
+  }
+
+  .header-right {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .profile-container input {
+    width: 80px;
+  }
+
+  .tiles-grid {
+    grid-template-columns: 1fr; /* Einspaltige Kacheln auf dem Handy */
+    gap: 14px;
+  }
+
+  form {
+    flex-direction: column;
+  }
+
+  form input, form select, form button {
+    width: 100%;
+  }
+
+  .secondary-btn, .add-btn {
+    justify-content: center;
+  }
+
+  .yearly-bar-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .yearly-bar-track {
+    width: 100%;
+  }
+
+  .yearly-bar-val {
+    width: 100%;
+    text-align: left;
+  }
+}
