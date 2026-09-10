@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinanceControl</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="apple-touch-icon" href="https://img.icons8.com/isometric/512/wallet.png">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- HEADER -->
+    <header class="top-nav">
+      <div class="logo">
+        <i data-lucide="wallet"></i>
+        <span>FinanceControl</span>
+      </div>
+      
+      <div class="header-right">
+        <!-- Hell / Dunkel Umschalter -->
+        <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()" title="Design wechseln">
+          <i data-lucide="sun" id="theme-icon-sun"></i>
+          <i data-lucide="moon" id="theme-icon-moon"></i>
+        </button>
+
+        <div class="month-picker-container">
+          <i data-lucide="calendar"></i>
+          <select id="global-month-select" onchange="changeActiveMonth(this.value)">
+            <!-- Wird via JS befüllt -->
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <!-- 1. HAUPT-DASHBOARD -->
+    <main id="dashboard-view" class="view active">
+      <section class="welcome-banner">
+        <h1 id="dashboard-title">Übersicht</h1>
+        <p>Aktiver Monat: <strong id="current-month-display" class="text-blue">-</strong></p>
+      </section>
+
+      <div class="tiles-grid">
+        
+        <!-- Kachel 1: Einnahmen -->
+        <div class="tile" onclick="switchView('einnahmen-view')">
+          <div class="tile-header">
+            <div class="icon-box teal"><i data-lucide="arrow-down-left"></i></div>
+            <span class="badge">Zufluss</span>
+          </div>
+          <div class="tile-body">
+            <h3>Einnahmen</h3>
+            <p class="amount" id="tile-income-total">0,00 €</p>
+          </div>
+          <div class="tile-footer">
+            <span>Verwalten</span>
+            <i data-lucide="arrow-right"></i>
+          </div>
+        </div>
+
+        <!-- Kachel 2: Fixkosten -->
+        <div class="tile" onclick="switchView('fixkosten-view')">
+          <div class="tile-header">
+            <div class="icon-box blue"><i data-lucide="lock"></i></div>
+            <span class="badge">Monatlich</span>
+          </div>
+          <div class="tile-body">
+            <h3>Fixkosten</h3>
+            <p class="amount" id="tile-fix-total">0,00 €</p>
+          </div>
+          <div class="tile-footer">
+            <span>Verwalten</span>
+            <i data-lucide="arrow-right"></i>
+          </div>
+        </div>
+
+        <!-- Kachel 3: Variable Kosten -->
+        <div class="tile" onclick="switchView('variable-view')">
+          <div class="tile-header">
+            <div class="icon-box green"><i data-lucide="shopping-bag"></i></div>
+            <span class="badge">Flexibel</span>
+          </div>
+          <div class="tile-body">
+            <h3>Variable Kosten</h3>
+            <p class="amount" id="tile-var-total">0,00 €</p>
+          </div>
+          <div class="tile-footer">
+            <span>Verwalten</span>
+            <i data-lucide="arrow-right"></i>
+          </div>
+        </div>
+
+        <!-- Kachel 4: Jährliche Kosten & Rücklagen -->
+        <div class="tile" onclick="switchView('jaehrliche-kosten-view')">
+          <div class="tile-header">
+            <div class="icon-box yellow"><i data-lucide="piggy-bank"></i></div>
+            <span class="badge">Rücklagen</span>
+          </div>
+          <div class="tile-body">
+            <h3>Jährliche Kosten</h3>
+            <p class="amount" id="tile-yearly-total">0,00 €</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
+              Mtl. Sparrate: <strong id="tile-yearly-monthly" class="text-blue">0,00 €</strong>
+            </p>
+          </div>
+          <div class="tile-footer">
+            <span>Rücklagen verwalten</span>
+            <i data-lucide="arrow-right"></i>
+          </div>
+        </div>
+
+        <!-- Kachel 5: Monatsbilanz / Restbudget -->
+        <div class="tile card-balance" onclick="switchView('summary-view')">
+          <div class="tile-header">
+            <div class="icon-box purple"><i data-lucide="pie-chart"></i></div>
+            <span class="badge">Monatsbilanz</span>
+          </div>
+          <div class="tile-body">
+            <h3>Restbudget</h3>
+            <p class="amount" id="tile-remaining">0,00 €</p>
+          </div>
+          
+          <div class="toggle-container" onclick="event.stopPropagation();">
+            <label class="toggle-switch" for="deduct-yearly-toggle">
+              <input type="checkbox" id="deduct-yearly-toggle" onchange="updateDashboard()">
+              <span class="slider"></span>
+            </label>
+            <span class="toggle-label">Jährl. Rücklagen abziehen</span>
+          </div>
+
+          <div class="tile-footer" style="margin-top: 10px;">
+            <span>Auswertung</span>
+            <i data-lucide="arrow-right"></i>
+          </div>
+        </div>
+
+        <!-- Kachel 6: Historie -->
+        <div class="tile" onclick="switchView('history-view')">
+          <div class="tile-header">
+            <div class="icon-box orange"><i data-lucide="calendar-range"></i></div>
+            <span class="badge">Historie</span>
+          </div>
+          <div class="tile-body">
+            <h3>Monate & Jahre</h3>
+            <p class="amount" style="font-size: 1.1rem; margin-top: 12px;">Vergleich & Verlauf</p>
+          </div>
+          <div class="tile-footer">
+            <span>Analysieren</span>
+            <i data-lucide="arrow-right"></i>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- EINNAHMEN VIEW -->
+    <section id="einnahmen-view" class="view">
+      <button class="back-btn" onclick="switchView('dashboard-view')">
+        <i data-lucide="arrow-left"></i> Zurück zum Dashboard
+      </button>
+      <div class="view-header-flex">
+        <h2>Einnahmen (<span class="active-month-name"></span>)</h2>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <select id="copy-inc-month-select" class="secondary-btn" style="padding: 6px 12px;"></select>
+          <button class="secondary-btn" onclick="copyIncomesFromSelectedMonth()">
+            <i data-lucide="copy"></i> Übernehmen
+          </button>
+        </div>
+      </div>
+      <div class="content-card">
+        <form id="inc-form" onsubmit="addEntry(event, 'inc')">
+          <input type="text" id="inc-name" placeholder="Quelle (z.B. Gehalt)" required>
+          <input type="number" step="0.01" id="inc-amount" placeholder="Betrag (€)" required>
+          <button type="submit" class="add-btn"><i data-lucide="plus"></i> Hinzufügen</button>
+        </form>
+        <table class="data-table">
+          <thead><tr><th>Quelle</th><th>Betrag</th><th>Aktionen</th></tr></thead>
+          <tbody id="inc-list"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FIXKOSTEN VIEW -->
+    <section id="fixkosten-view" class="view">
+      <button class="back-btn" onclick="switchView('dashboard-view')">
+        <i data-lucide="arrow-left"></i> Zurück zum Dashboard
+      </button>
+      <div class="view-header-flex">
+        <h2>Fixkosten (<span class="active-month-name"></span>)</h2>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <select id="copy-fix-month-select" class="secondary-btn" style="padding: 6px 12px;"></select>
+          <button class="secondary-btn" onclick="copyFixExpensesFromSelectedMonth()">
+            <i data-lucide="copy"></i> Übernehmen
+          </button>
+        </div>
+      </div>
+      <div class="content-card">
+        <form id="fix-form" onsubmit="addEntry(event, 'fix')">
+          <input type="text" id="fix-name" placeholder="Bezeichnung (z.B. Miete, Netflix)" oninput="autoDetectCategory('fix')" required>
+          <input type="number" step="0.01" id="fix-amount" placeholder="Betrag (€)" required>
+          <select id="fix-category" class="category-select">
+            <option value="Abos & Streaming">📺 Abos & Streaming</option>
+            <option value="Lebensmittel & Haushalt">🛒 Lebensmittel & Haushalt</option>
+            <option value="Auto & Mobilität">🚗 Auto & Mobilität</option>
+            <option value="Baumarkt & Handwerk">🛠️ Baumarkt & Handwerk</option>
+            <option value="Wohnen & Fixkosten" selected>🏠 Wohnen & Fixkosten</option>
+            <option value="Gastronomie & Freizeit">🍽️ Gastronomie & Freizeit</option>
+            <option value="Shopping & Elektronik">🛍️ Shopping & Elektronik</option>
+            <option value="Gesundheit & Pflege">🩺 Gesundheit & Pflege</option>
+            <option value="Haustier">🐾 Haustier</option>
+            <option value="Sonstiges">❓ Sonstiges</option>
+          </select>
+          <button type="submit" class="add-btn"><i data-lucide="plus"></i> Hinzufügen</button>
+        </form>
+        <table class="data-table">
+          <thead><tr><th>Bezeichnung</th><th>Kategorie</th><th>Betrag</th><th>Aktionen</th></tr></thead>
+          <tbody id="fix-list"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- VARIABLE KOSTEN VIEW -->
+    <section id="variable-view" class="view">
+      <button class="back-btn" onclick="switchView('dashboard-view')">
+        <i data-lucide="arrow-left"></i> Zurück zum Dashboard
+      </button>
+      <h2>Variable Kosten (<span class="active-month-name"></span>)</h2>
+      <div class="content-card">
+        <form id="var-form" onsubmit="addEntry(event, 'var')">
+          <input type="text" id="var-name" placeholder="Bezeichnung (z.B. Edeka, Tanken, Spotify)" oninput="autoDetectCategory('var')" required>
+          <input type="number" step="0.01" id="var-amount" placeholder="Betrag (€)" required>
+          <select id="var-category" class="category-select">
+            <option value="Abos & Streaming">📺 Abos & Streaming</option>
+            <option value="Lebensmittel & Haushalt">🛒 Lebensmittel & Haushalt</option>
+            <option value="Auto & Mobilität">🚗 Auto & Mobilität</option>
+            <option value="Baumarkt & Handwerk">🛠️ Baumarkt & Handwerk</option>
+            <option value="Wohnen & Fixkosten">🏠 Wohnen & Fixkosten</option>
+            <option value="Gastronomie & Freizeit">🍽️ Gastronomie & Freizeit</option>
+            <option value="Shopping & Elektronik">🛍️ Shopping & Elektronik</option>
+            <option value="Gesundheit & Pflege">🩺 Gesundheit & Pflege</option>
+            <option value="Haustier">🐾 Haustier</option>
+            <option value="Sonstiges" selected>❓ Sonstiges</option>
+          </select>
+          <button type="submit" class="add-btn"><i data-lucide="plus"></i> Hinzufügen</button>
+        </form>
+        <table class="data-table">
+          <thead><tr><th>Bezeichnung</th><th>Kategorie</th><th>Betrag</th><th>Aktionen</th></tr></thead>
+          <tbody id="var-list"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- JÄHRLICHE KOSTEN VIEW -->
+    <section id="jaehrliche-kosten-view" class="view">
+      <button class="back-btn" onclick="switchView('dashboard-view')">
+        <i data-lucide="arrow-left"></i> Zurück zum Dashboard
+      </button>
+      <h2>Jährliche Kosten & Rücklagen</h2>
+      <p style="color: var(--text-muted); margin-bottom: 15px;">
+        Trage hier Ausgaben ein, die nicht jeden Monat anfallen. Die erforderliche monatliche Sparrate wird automatisch berechnet.
+      </p>
+
+      <div class="content-card">
+        <form id="yearly-form" onsubmit="addYearlyEntry(event)">
+          <input type="text" id="yearly-name" placeholder="Posten (z.B. KFZ-Steuer, Versicherung)" required>
+          <input type="number" step="0.01" id="yearly-amount" placeholder="Gesamtbetrag (€)" required>
+          <select id="yearly-interval">
+            <option value="12">1x im Jahr (jährlich)</option>
+            <option value="6">2x im Jahr (halbjährlich)</option>
+            <option value="3">4x im Jahr (vierteljährlich)</option>
+          </select>
+          <button type="submit" class="add-btn"><i data-lucide="plus"></i> Hinzufügen</button>
+        </form>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Posten</th>
+              <th>Turnus</th>
+              <th>Betrag</th>
+              <th>Mtl. Sparrate</th>
+              <th>Aktionen</th>
+            </tr>
+          </thead>
+          <tbody id="yearly-list"></tbody>
+        </table>
+      </div>
+
+      <div class="summary-stats">
+        <div class="stat-box">
+          <span>Gesamte Jahreskosten</span>
+          <strong id="yearly-total-sum">0,00 €</strong>
+        </div>
+        <div class="stat-box">
+          <span>Monatliche Rücklage nötig</span>
+          <strong id="yearly-monthly-sum" class="text-blue">0,00 €</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- MONATSBILANZ VIEW -->
+    <section id="summary-view" class="view">
+      <button class="back-btn" onclick="switchView('dashboard-view')">
+        <i data-lucide="arrow-left"></i> Zurück zum Dashboard
+      </button>
+      <h2>Monatsbilanz (<span class="active-month-name"></span>)</h2>
+
+      <div class="content-card">
+        <div class="summary-stats">
+          <div class="stat-box">
+            <span>Gesamteinnahmen</span>
+            <strong id="summary-income" class="text-green">0,00 €</strong>
+          </div>
+          <div class="stat-box">
+            <span>Gesamtausgaben</span>
+            <strong id="summary-spent" class="text-red">0,00 €</strong>
+          </div>
+          <div class="stat-box">
+            <span>Verbleibendes Restbudget</span>
+            <strong id="summary-remaining">0,00 €</strong>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 28px; margin-bottom: 8px;">Ausgaben nach Kategorien</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 14px;">
+          Automatische und zugewiesene Aufschlüsselung deiner Fixkosten & Variablen Kosten.
+        </p>
+
+        <div class="progress-bar-container" id="category-progress-bar"></div>
+
+        <div id="category-legend" class="category-legend"></div>
+
+        <table class="data-table" style="margin-top: 20px;">
+          <thead>
+            <tr>
+              <th>Kategorie</th>
+              <th>Anteil am Gesamtausgeben</th>
+              <th>Gesamtbetrag</th>
+            </tr>
+          </thead>
+          <tbody id="category-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+       <!-- HISTORIE VIEW -->
+    <section id="history-view" class="view">
+      <button class="back-btn" onclick="switchView('dashboard-view')">
+        <i data-lucide="arrow-left"></i> Zurück zum Dashboard
+      </button>
+      <h2>Monats- & Jahreshistorie</h2>
+
+      <div class="content-card">
+        <h3>Neuen Monat anlegen</h3>
+        <div class="add-month-form" style="display: flex; gap: 12px; margin-top: 14px; align-items: center; flex-wrap: wrap;">
+          <input type="month" id="new-month-input" style="max-width: 200px;">
+          <button class="add-btn" onclick="addNewMonth()"><i data-lucide="plus"></i> Monat erstellen</button>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h3>Ausgabe-Analyse nach Jahr</h3>
+        <div class="filter-row" style="margin-top: 14px;">
+          <label for="filter-year">Jahr wählen:</label>
+          <select id="filter-year" onchange="renderHistoryAnalysis()" style="min-width: 110px;"></select>
+        </div>
+
+        <div class="summary-stats" style="margin-top: 20px;">
+          <div class="stat-box">
+            <span>Gesamtausgaben im Jahr</span>
+            <strong id="year-total-spent" class="text-red">0,00 €</strong>
+          </div>
+          <div class="stat-box">
+            <span>Durchschnitt pro Monat</span>
+            <strong id="year-avg-spent">0,00 €</strong>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 28px; margin-bottom: 12px;">Monatsübersicht des Jahres</h3>
+        <div id="yearly-bars-container" class="yearly-bars"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
